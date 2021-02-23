@@ -45,7 +45,21 @@ module.exports = function(sequelize, DataTypes) {
         tableName: 'users',
         createdAt: false,
         updatedAt: false
-    })
+    });
+
+    user.getEmail = (email) => {
+        let query = `SELECT id FROM users WHERE email='${email}'`;
+        return sequelize.query(query, {
+            type: sequelize.QueryTypes.SELECT
+        })
+    }
+
+    user.getUsers = () => {
+        let query = `SELECT id, email, name, created_at, updated_at FROM users WHERE is_active=true`;
+        return sequelize.query(query, {
+            type: sequelize.QueryTypes.SELECT
+        })
+    }
 
     return user;
 }

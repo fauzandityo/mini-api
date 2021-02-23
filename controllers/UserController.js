@@ -15,12 +15,17 @@ module.exports = {
             is_active: true
         }
 
-        db.user.findAndCountAll(options).then((users) => {
+        db.user.getUsers().then((users) => {
             const result = {
-                total: users.count,
-                data: users.rows
+                total: users.length,
+                data: users
             };
             return res.json(result)
+        }).catch((err) => {
+            return res.status(500).json({
+                status: 'error',
+                message: err
+            })
         })
     },
     create: (req, res) => {
@@ -31,14 +36,8 @@ module.exports = {
         body.is_active = true;
         body.created_at = moment().format('YYYY-MM-DD HH:mm:ss');
         
-        db.user.findOne({
-            where: {
-                email: {
-                    [Op.eq]: body.email
-                }
-            }
-        }).then((user) => {
-            if (user) {
+        db.user.getEmail(body.email).then((user) => {
+            if (user.length > 0) {
                 return res.status(400).json({
                     status: "error",
                     message: "Email already exist."
